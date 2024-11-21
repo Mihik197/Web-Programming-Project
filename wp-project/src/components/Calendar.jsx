@@ -1,9 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import axios from 'axios';
 import Day from './Day';
+import { useAuth } from '../hooks/useAuth';
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [daysWithImages, setDaysWithImages] = useState({});
+  const { token } = useAuth();
+
+  // Fetch images for the current month
+  useEffect(() => {
+    const fetchMonthImages = async () => {
+      try {
+        const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        
+        const response = await axios.get('/api/days/images/all', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        // Create a map of dates to their first image
+        const imageMap = response.data.reduce((acc, day) => {
+          if (day.images.length > 0) {
+            // Format date to YYYY-MM-DD for consistent comparison
+            const dateKey = day.date.split('T')[0];
+            acc[dateKey] = day.images[0];
+          }
+          return acc;
+        }, {});
+
+        setDaysWithImages(imageMap);
+      } catch (error) {
+        console.error('Error fetching month images:', error);
+      }
+    };
+
+    fetchMonthImages();
+  }, [currentDate, token]);
 
   const getDaysInMonth = (year, month) => {
     const firstDayOfMonth = new Date(year, month, 1);
@@ -37,8 +71,6 @@ const Calendar = () => {
     return days;
   };
 
-  const getFirstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-
   const navigateMonth = (direction) => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1));
   };
@@ -47,8 +79,6 @@ const Calendar = () => {
     const days = getDaysInMonth(currentDate.getFullYear(), currentDate.getMonth());
     return days;
   };
-
-  const days = renderDays();
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-6xl mx-auto">
@@ -80,14 +110,20 @@ const Calendar = () => {
 
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 gap-1 mt-4">
-        {days.map(({ date, isCurrentMonth }) => (
-          <Day
-            key={date.toISOString()}
-            date={date}
-            isCurrentMonth={isCurrentMonth}
-            hasContent={false} // Replace with actual logic to check content
-          />
-        ))}
+        {renderDays().map(({ date, isCurrentMonth }) => {
+          const dateKey = date.toISOString().split('T')[0];
+          const dayImage = daysWithImages[dateKey];
+          
+          return (
+            <Day
+              key={date.toISOString()}
+              date={date}
+              isCurrentMonth={isCurrentMonth}
+              hasContent={!!dayImage}
+              imageUrl={dayImage?.url}
+            />
+          );
+        })}
       </div>
     </div>
   );

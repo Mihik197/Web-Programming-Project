@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaImages, FaBook, FaClock, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
+import image from '../assets/image.png';
 
 const LandingPage = () => {
   return (
@@ -60,7 +61,7 @@ const LandingPage = () => {
           </div>
           <div className="lg:w-1/2">
             <img 
-              src="/demo-calendar.png" 
+              src={image} 
               alt="Calendar Interface Preview"
               className="rounded-lg shadow-2xl"
             />
