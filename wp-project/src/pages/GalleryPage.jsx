@@ -1,7 +1,7 @@
 // src/pages/GalleryPage.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns'; // Add parse import
 import { useAuth } from '../hooks/useAuth';
 
 axios.defaults.withCredentials = true;
@@ -49,6 +49,8 @@ function GalleryPage() {
         ...img,
         date: day.date
       })));
+      // Sort images within each month by uploadDate in descending order
+      acc[monthYear].sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
       return acc;
     }, {});
   };
@@ -62,26 +64,33 @@ function GalleryPage() {
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Gallery</h1>
-      {Object.entries(images).map(([monthYear, monthImages]) => (
-        <div key={monthYear} className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-700">{monthYear}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {monthImages.map((image) => (
-              <div 
-                key={image._id} 
-                className="aspect-square rounded-lg overflow-hidden hover:opacity-90 transition-opacity cursor-pointer"
-              >
-                <img
-                  src={image.url}
-                  alt={image.caption || "Gallery image"}
-                  className="w-full h-full object-cover"
-                  crossOrigin="use-credentials"
-                />
-              </div>
-            ))}
+      {Object.entries(images)
+        .sort((a, b) => {
+          // Parse the month year strings back to dates for comparison
+          const dateA = parse(a[0], 'MMMM yyyy', new Date());
+          const dateB = parse(b[0], 'MMMM yyyy', new Date());
+          return dateB - dateA; // Sort in descending order (newest first)
+        })
+        .map(([monthYear, monthImages]) => (
+          <div key={monthYear} className="space-y-4">
+            <h2 className="text-xl font-semibold text-gray-700">{monthYear}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              {monthImages.map((image) => (
+                <div 
+                  key={image._id} 
+                  className="aspect-square rounded-lg overflow-hidden hover:opacity-90 transition-opacity cursor-pointer"
+                >
+                  <img
+                    src={image.url}
+                    alt={image.caption || "Gallery image"}
+                    className="w-full h-full object-cover"
+                    crossOrigin="use-credentials"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 }

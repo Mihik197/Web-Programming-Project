@@ -20,10 +20,10 @@ const AlbumViewPage = () => {
 			const response = await axios.get(`/api/albums/${albumId}`);
 			setAlbum(response.data);
 			
-			// Images now have complete URLs from the backend
+			 // Remove the base URL since it's already included in the URL from backend
 			const enhancedImages = response.data.images.map(img => ({
 				...img,
-				url: `http://localhost:5000${img.url}`
+				url: img.url // Don't add the base URL here
 			}));
 			
 			setImages(enhancedImages);
