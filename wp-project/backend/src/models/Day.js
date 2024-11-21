@@ -11,16 +11,13 @@ const daySchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  notes: String,
+  notes: {
+    type: String,
+    default: ''
+  },
   images: [{
-    data: {
-      type: Buffer,
-      required: true
-    },
-    contentType: {
-      type: String,
-      required: true
-    },
+    data: Buffer,
+    contentType: String,
     caption: String,
     uploadDate: {
       type: Date,
@@ -28,5 +25,8 @@ const daySchema = new mongoose.Schema({
     }
   }]
 }, { timestamps: true });
+
+// Add compound index for faster queries
+daySchema.index({ userId: 1, date: 1 }, { unique: true });
 
 module.exports = mongoose.model('Day', daySchema);

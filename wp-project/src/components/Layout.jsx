@@ -31,7 +31,7 @@ function Layout() {
             </div>
             <nav className="p-4 space-y-2">
               <NavLink
-                to="/"
+                to="/app" // Updated path
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive
@@ -44,7 +44,7 @@ function Layout() {
                 <span className="font-medium">Calendar</span>
               </NavLink>
               <NavLink
-                to="/albums"
+                to="/app/albums" // Ensure other links are under /app
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive
@@ -57,7 +57,7 @@ function Layout() {
                 <span className="font-medium">Albums</span>
               </NavLink>
               <NavLink
-                to="/gallery"
+                to="/app/gallery"
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive
@@ -70,7 +70,7 @@ function Layout() {
                 <span className="font-medium">Gallery</span>
               </NavLink>
               <NavLink
-                to="/settings"
+                to="/app/settings"
                 className={({ isActive }) =>
                   `flex items-center space-x-3 px-4 py-2 rounded-lg transition-colors ${
                     isActive

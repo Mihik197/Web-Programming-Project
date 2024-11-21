@@ -9,7 +9,7 @@ const CalendarDay = ({ date, isCurrentMonth, hasContent }) => {
   const handleClick = () => {
     // Format date as YYYY-MM-DD for URL
     const formattedDate = date.toISOString().split('T')[0];
-    navigate(`/day/${formattedDate}`);
+    navigate(`/app/day/${formattedDate}`); // Updated path
   };
 
   return (
