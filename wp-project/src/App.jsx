@@ -13,6 +13,7 @@ import axios from 'axios';
 import AlbumsPage from './pages/AlbumsPage';
 import AlbumViewPage from './pages/AlbumViewPage'; // Import the new page
 import GalleryPage from './pages/GalleryPage'; // Import the new page
+import SettingsPage from './pages/SettingsPage'; // Import the new page
 
 axios.defaults.baseURL = 'http://localhost:5000';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -39,6 +40,7 @@ function App() {
             <Route path="albums" element={<AlbumsPage />} />
             <Route path="albums/:albumId" element={<AlbumViewPage />} /> {/* New Route */}
             <Route path="gallery" element={<GalleryPage />} /> {/* New Route */}
+            <Route path="settings" element={<SettingsPage />} /> {/* New Route */}
           </Route>
         </Routes>
       </Router>

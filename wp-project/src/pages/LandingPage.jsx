@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaImages, FaBook, FaClock, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { HiOutlineArrowNarrowRight } from 'react-icons/hi';
 import image from '../assets/image.png';
+import avatar1 from '../assets/premium_photo-1689530775582-83b8abdb5020.jpeg';
+import avatar2 from '../assets/premium_photo-1689551670902-19b441a6afde.jpeg';
+import avatar3 from '../assets/images.jpeg';
 
 const LandingPage = () => {
   return (
@@ -149,19 +152,19 @@ const LandingPage = () => {
               {
                 name: "Sarah Johnson",
                 role: "Photography Enthusiast",
-                image: "/avatars/user1.jpg", // Add placeholder avatars
+                image: avatar2, // Add placeholder avatars
                 quote: "LifeInPics has transformed how I preserve my memories. The calendar view makes it so intuitive!"
               },
               {
                 name: "David Chen",
                 role: "Travel Blogger",
-                image: "/avatars/user2.jpg",
+                image: avatar1,
                 quote: "I use it daily to document my travels. The combination of photos and notes is perfect."
               },
               {
                 name: "Emily Rodriguez",
                 role: "Digital Creator",
-                image: "/avatars/user3.jpg",
+                image: avatar3,
                 quote: "The best way to keep track of life's precious moments. Simple yet powerful."
               }
             ].map((testimonial, index) => (
