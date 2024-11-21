@@ -8,9 +8,14 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Adjust if your frontend runs on a different port
-  credentials: true
+  origin: 'http://localhost:5173', // Frontend URL
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Type', 'Authorization']
+  // Remove preflightContinue or set it to false
 }));
+
 app.use(express.json());
 
 // Connect to MongoDB
@@ -26,7 +31,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Routes
 app.use('/api/auth', require('./src/routes/auth'));
-app.use('/api/days', require('./src/routes/days')); // Add days routes
+app.use('/api/days', require('./src/routes/days'));
+app.use('/api/albums', require('./src/routes/albums'));
 
 // Error handling middleware (should be last)
 app.use((err, req, res, next) => {

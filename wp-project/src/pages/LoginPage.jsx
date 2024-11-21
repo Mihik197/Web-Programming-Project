@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
+import axios from 'axios'; // Import axios
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -26,27 +27,20 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('Successfully logged in!');
-        login(data.token);
-        navigate('/app');
-      } else {
-        toast.error(data.message || 'Invalid email or password');
-        setError(data.message || 'Invalid email or password');
+      const response = await axios.post('/api/auth/login', formData);
+      const { token } = response.data;
+      
+      if (token) {
+        await login(token);
+        setTimeout(() => {
+          toast.success('Successfully logged in!');
+          navigate('/app', { replace: true });
+        }, 100);
       }
     } catch (error) {
-      toast.error('Failed to connect to server');
-      setError('Failed to connect to server');
+      const message = error.response?.data?.message || 'Failed to connect to server';
+      toast.error(message);
+      setError(message);
     }
   };
 

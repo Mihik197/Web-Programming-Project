@@ -153,14 +153,14 @@ router.post('/:date/images', auth, upload.single('image'), async (req, res) => {
 });
 
 // Get image
-router.get('/:date/images/:imageId', auth, async (req, res) => {
+router.get('/:date/images/:imageId', async (req, res) => {
   try {
     const date = new Date(req.params.date);
     date.setHours(0, 0, 0, 0);
 
+    // Change the query to find by imageId instead of exact date
     const day = await Day.findOne({
-      userId: req.user.id,
-      date: date
+      'images._id': req.params.imageId
     });
 
     if (!day) {
@@ -172,7 +172,13 @@ router.get('/:date/images/:imageId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Image not found' });
     }
 
-    res.set('Content-Type', image.contentType);
+    res.set({
+      'Content-Type': image.contentType,
+      'Cache-Control': 'public, max-age=31557600',
+      'Cross-Origin-Resource-Policy': 'cross-origin',
+      'Access-Control-Allow-Origin': 'http://localhost:5173'
+    });
+    
     res.send(image.data);
   } catch (error) {
     console.error('Get image error:', error);
@@ -195,16 +201,41 @@ router.delete('/:date/images/:imageId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Day not found' });
     }
 
-    const image = day.images.id(req.params.imageId);
-    if (!image) {
-      return res.status(404).json({ message: 'Image not found' });
-    }
-
-    image.remove();
+    // Use pull instead of remove
+    day.images.pull({ _id: req.params.imageId });
     await day.save();
 
     res.json({ message: 'Image deleted successfully' });
   } catch (error) {
+    console.error('Delete image error:', error); // Add error logging
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get all images for user
+router.get('/images/all', auth, async (req, res) => {
+  try {
+    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
+    const days = await Day.find({ 
+      userId: req.user.id,
+      'images.0': { $exists: true }
+    });
+
+    const allImages = days.map(day => ({
+      date: day.date.toISOString().split('T')[0],
+      dayId: day._id,
+      images: day.images.map(img => ({
+        _id: img._id,
+        contentType: img.contentType,
+        caption: img.caption,
+        uploadDate: img.uploadDate,
+        url: `${baseUrl}/api/days/${day.date.toISOString().split('T')[0]}/images/${img._id}`
+      }))
+    }));
+
+    res.json(allImages);
+  } catch (error) {
+    console.error('Get all images error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

@@ -7,9 +7,11 @@ const CalendarDay = ({ date, isCurrentMonth, hasContent }) => {
   const isToday = new Date().toDateString() === date.toDateString();
 
   const handleClick = () => {
-    // Format date as YYYY-MM-DD for URL
-    const formattedDate = date.toISOString().split('T')[0];
-    navigate(`/app/day/${formattedDate}`); // Updated path
+    // Format date as YYYY-MM-DD while preserving local timezone
+    const formattedDate = date.getFullYear() + '-' + 
+      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(date.getDate()).padStart(2, '0');
+    navigate(`/app/day/${formattedDate}`);
   };
 
   return (
